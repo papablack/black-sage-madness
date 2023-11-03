@@ -180,30 +180,30 @@ def train_stable_diffusion_model(dataset, model, preTrainedPath):
 
 class SD2CustomModel(nn.Module):
   def __init__(self):
-      super(SD2CustomModel, self).__init__()
+    super(SD2CustomModel, self).__init__()
 
-      self.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1)
-      self.conv2 = nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1)
-      self.conv3 = nn.Conv2d(128, 256, kernel_size=3, stride=1, padding=1)
-      self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
+    self.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1)
+    self.conv2 = nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1)
+    self.conv3 = nn.Conv2d(128, 256, kernel_size=3, stride=1, padding=1)
+    self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
 
-      # Calculate the size of the flattened features after the final pooling layer
-      # This will depend on the number of pooling layers and their kernel sizes/strides
-      self.flattened_size = 256 * (512 // (2 ** num_pooling_layers)) ** 2
-      self.fc1 = nn.Linear(self.flattened_size, 1024)
+    # Calculate the size of the flattened features after the final pooling layer
+    # This will depend on the number of pooling layers and their kernel sizes/strides
+    self.flattened_size = 256 * (512 // (2 ** num_pooling_layers)) ** 2
+    self.fc1 = nn.Linear(self.flattened_size, 1024)
 
 
   def forward(self, x):      
-      x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = self.pool(F.relu(self.conv3(x)))
+    x = self.pool(F.relu(self.conv1(x)))
+    x = self.pool(F.relu(self.conv2(x)))
+    x = self.pool(F.relu(self.conv3(x)))
 
-        # Flatten the tensor for the fully connected layer
-        x = x.view(-1, self.flattened_size)
-        x = F.relu(self.fc1(x))
+    # Flatten the tensor for the fully connected layer
+    x = x.view(-1, self.flattened_size)
+    x = F.relu(self.fc1(x))
 
-        # Add more layers or a final classification/regression layer if needed
-        return x 
+    # Add more layers or a final classification/regression layer if needed
+    return x 
 
 #Execute script
 
